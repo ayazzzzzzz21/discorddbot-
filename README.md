@@ -1,2 +1,2 @@
-# discorddbot-
-it makes the thing you write get writed more
+# about me 
+my name is ayaz and i usually put my codes here 
