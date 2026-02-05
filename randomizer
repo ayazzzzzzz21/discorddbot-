@@ -1,0 +1,57 @@
+from flask import Flask
+import random
+import os
+app = Flask(__name__)
+TEKNOLOJI_MESAJLARI = [
+    "Ekran süresini azaltmak, uyku kaliteni artırır.",
+    "Sosyal medyada geçirdiğin her saat, gerçek ilişkilerden çalıyor.",
+    "Telefonsuz bir yemek yemeyi dene; sohbetin tadına var.",
+    "Sürekli bildirimler dikkatini bölüyor; sessiz mod kullan.",
+    "Yatmadan 1 saat önce ekranları kapat, daha iyi uyu.",
+    "Teknoloji bir araçtır; sen onun efendisi ol, kölesi değil.",
+    "Her 'bir bakayım' 30 dakika demek; sınır koy.",
+    "Gerçek dünyada bir hobi edin; ekrandan uzak kal.",
+    "Çocuklarınıza örnek olun: Telefonu yemek masasında bırakın.",
+    "Dijital detoks: Haftada bir gün ekransız geçirmeyi dene.",
+    "Sürekli scroll etmek beyni yorar; mola ver.",
+    "Mesajlara anında cevap vermek zorunda değilsin.",
+    "Teknoloji bağımlılığı gerçek bir bağımlılıktır; hafife alma.",
+    "Doğada vakit geçir; WiFi'siz anlar en değerlilerdir.",
+    "Kendine 'ekransız saatler' belirle ve buna uy.",
+]
+@app.route("/")
+def index():
+    mesaj = random.choice(TEKNOLOJI_MESAJLARI)
+    dosya_yolu = os.path.join(os.path.dirname(__file__), "index.html")
+    with open(dosya_yolu, "r", encoding="utf-8") as f:
+        html = f.read()
+    html = html.replace("{{ mesaj }}", mesaj)
+    return html
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+@htlm part
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name ="viewport" content="width = device-width ,inital-scale=1 ">
+<meta http-equiv="refresh" content="10">
+<title>teknoloji bağımlılığı</title>
+ <style> 
+    body{font-family: sans-serif; padding: 2rem; text-align: center;background: aliceblue;}
+    .mesaj{font-size: 1.1rem; margin: 1rem 0 ;}
+    .sayac{font-size: 1.1rem; color: black;}
+
+ </style>
+
+</head>
+<body>
+    <div>
+        <h1>teknoloji bağımlılığı hakkında</h1>
+        <p class="mesaj">{{ mesaj }}</p>
+        <p class="sayac">10 saniyede yeniler.</p>
+    </div>
+         </body>
+        </html>
