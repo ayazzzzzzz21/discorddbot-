@@ -1,0 +1,46 @@
+from flask import Flask
+import random
+import os
+app = Flask(__name__)
+TEKNOLOJI_MESAJLARI = [
+    "Ekran süresini azaltmak, uyku kaliteni artırır.",
+    "Sosyal medyada geçirdiğin her saat, gerçek ilişkilerden çalıyor.",
+    "Telefonsuz bir yemek yemeyi dene; sohbetin tadına var.",
+    "Sürekli bildirimler dikkatini bölüyor; sessiz mod kullan.",
+    "Yatmadan 1 saat önce ekranları kapat, daha iyi uyu.",
+    "Teknoloji bir araçtır; sen onun efendisi ol, kölesi değil.",
+    "Her 'bir bakayım' 30 dakika demek; sınır koy.",
+    "Gerçek dünyada bir hobi edin; ekrandan uzak kal.",
+    "Çocuklarınıza örnek olun: Telefonu yemek masasında bırakın.",
+    "Dijital detoks: Haftada bir gün ekransız geçirmeyi dene.",
+    "Sürekli scroll etmek beyni yorar; mola ver.",
+    "Mesajlara anında cevap vermek zorunda değilsin.",
+    "Teknoloji bağımlılığı gerçek bir bağımlılıktır; hafife alma.",
+    "Doğada vakit geçir; WiFi'siz anlar en değerlilerdir.",
+    "Kendine 'ekransız saatler' belirle ve buna uy.",
+]
+# Rotalar (routes): URL'deki yol (path) hangi sayfayı göstereceğini belirler.
+# Örn: https://site.com/about → /about yolu "Hakkında" sayfasına gider.
+@app.route("/")
+def home():
+    """Ana sayfa: index.html + rastgele teknoloji mesajı."""
+    mesaj = random.choice(TEKNOLOJI_MESAJLARI)
+    dosya_yolu = os.path.join(os.path.dirname(__file__), "index.html")
+    with open(dosya_yolu, "r", encoding="utf-8") as f:
+        html = f.read()
+    html = html.replace("{{ mesaj }}", mesaj)
+    return html
+@app.route("/about")
+def about():
+    """Hakkında sayfası. URL: http://127.0.0.1:5000/about"""
+    return "<h1>Hakkında</h1>"
+if __name__ == "__main__":
+    app.run(debug=True)
+@app.route("/about2")
+def about2():
+    """Hakkımızda sayfası. URL: http://127.0.0.1:5000/about"""
+    return "<h1>hakkımızda </h1>"
+@app.route("/about3")
+def about3():
+    """Hakkımda sayfası. URL: http://127.0.0.1:5000/about"""
+    return "<h1>hakkımda</h1>"
