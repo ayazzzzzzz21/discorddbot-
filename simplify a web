@@ -1,0 +1,40 @@
+!pip install requests beautifulsoup4 nltk
+
+import requests,nltk,string
+from bs4 import BeautifulSoup
+from nltk.tokenize import sent_tokenize,word_tokenize
+from nltk.corpus import stopwords
+from collections import Counter
+
+nltk.download("punkt")
+nltk.download("punkt_tab")
+nltk.download("stopwords")
+urls=[
+
+]
+
+def summarize(url,n=3):
+    soup=BeautifulSoup(requests.get(url).text,"html.parser")
+    text=" ".join(p.text for p in soup.find_all("p"))
+
+    stop=set(stopwords.words("turkish"))
+    sentences=sent_tokenize(text,language="turkish")
+
+    words=[w for w in word_tokenize(text.lower())
+    if w not in stop and w not in string.punctuation]
+
+    freq=Counter(words)
+
+    scores=[
+        sum(freq[w] for w in word_tokenize(s.lower()))
+        for s in sentences
+    ]
+
+    top=sorted(range(len(scores)),key=lambda i:scores[i],reverse=True)[:n]
+    return " ".join(sentences[i] for i in sorted(top))
+
+print()
+
+for i,url in enumerate(urls,1):
+    print(f"\n📌 Makale {i}")
+    print(summarize(url))
