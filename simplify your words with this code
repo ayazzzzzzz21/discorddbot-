@@ -1,0 +1,108 @@
+!pip install wordcloud
+!pip install pymorphy3
+import pymorphy3
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.probability import FreqDist
+from wordcloud import WordCloud
+from matplotlib import pyplot as plt
+
+nltk.download('punkt')
+nltk.download('punkt_tab')  
+nltk.download('stopwords')
+
+text ='''
+
+stop_words = set(stopwords.words('turkish'))
+
+print(10 * "-", " etkisiz kelimeler ", 10 * "-")
+print(stop_words)
+print(20 * "-")
+
+
+
+
+words = word_tokenize(text)
+
+print( 20 * "-")
+print(words)
+print(20 * "-")
+print("Metninizdeki toplam kelime sayısı: ", len(words))
+print(20 * "-")
+
+wc = WordCloud().generate(' '.join([i for i in words]))
+plt.imshow(wc)
+
+
+
+
+
+words = [word.lower() for word in words if word.isalpha()]
+words = [word for word in words if word not in stop_words]
+
+print(10 * "-", " Etkisiz kelimeler hariç küçük harfli kelimeler ", 10 * "-")
+print(words)
+print(20 * "-")
+print("Metninizdeki toplam kelime sayısı:", len(words))
+print(20 * "-")
+
+wc = WordCloud().generate(' '.join([i for i in words]))
+plt.imshow(wc)
+
+
+
+
+import inspect
+
+def getargspec(func):
+    """getfullargspec fonksiyonu aracılığıyla inspect.getargspec ile uyumluluk sağlanması"""
+    from collections import namedtuple
+    FullArgSpec = inspect.getfullargspec(func)
+    ArgSpec = namedtuple('ArgSpec', 'args varargs keywords defaults')
+    return ArgSpec(FullArgSpec.args, FullArgSpec.varargs, FullArgSpec.varkw, FullArgSpec.defaults)
+
+inspect.getargspec = getargspec
+
+
+
+
+
+
+morph = pymorphy3.MorphAnalyzer()
+words = [morph.parse(word)[0].normal_form for word in words]
+
+print(10 * "-", " Kelimelerin kök hali ", 10 * "-")
+print(words)
+print(20 * "-")
+print("Metninizdeki toplam kelime sayısı: ", len(words))
+print(20 * "-")
+
+wc = WordCloud().generate(' '.join([i for i in words]))
+plt.imshow(wc)
+
+freq_dist = FreqDist(words)
+sentence_scores = {}
+
+for i, sentence in enumerate(sentences):
+    sentence_words = word_tokenize(sentence.lower())
+    sentence_score = sum([freq_dist[word] for word in sentence_words if word in freq_dist])
+
+    sentence_scores[i] = sentence_score
+
+sentence_scores
+
+sorted_scores = sorted(sentence_scores.items(), key=lambda x: x[1], reverse=True)
+
+sorted_scores
+
+
+selected_sentences = sorted_scores[:1]
+selected_sentences = sorted(selected_sentences)
+
+# Özet oluşturma
+summary = ' '.join([sentences[i] for i, _ in selected_sentences])
+print(summary)
+
+
+
