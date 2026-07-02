@@ -1,0 +1,83 @@
+import tempfile
+from pathlib import Path
+
+import discord
+from discord.ext import commands
+from ultralytics import YOLO
+
+import config
+
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix=config.PREFIX, intents=intents)
+model = None
+
+
+def get_img(msg):
+    for a in msg.attachments:
+        if a.content_type and a.content_type.startswith("image/"):
+            return a
+
+
+@bot.event
+async def on_ready():
+    global model
+    model = YOLO(config.YOLO_MODEL)
+    print(f"Hazir: {bot.user}")
+
+
+@bot.command(name="anla")
+async def anla(ctx):
+    img = get_img(ctx.message)
+    if not img and ctx.message.reference:
+        ref = ctx.message.reference.resolved
+        if isinstance(ref, discord.Message):
+            img = get_img(ref)
+    if not img:
+        return await ctx.reply(f"Gorsel ekle veya gorsele yanit verip `{config.PREFIX}anla` yaz.")
+
+    path = None
+    try:
+        async with ctx.typing():
+            f = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+            path = Path(f.name)
+            f.close()
+            await img.save(path)
+            r = model.predict(str(path), conf=config.CONF, verbose=False)[0]
+            items = sorted(
+                ((r.names[int(b.cls[0])], float(b.conf[0])) for b in (r.boxes or [])),
+                key=lambda x: x[1],
+                reverse=True,
+            )
+        if not items:
+            await ctx.reply("Nesne bulunamadi.")
+        else:
+            lines = "\n".join(f"{i}. **{n}** — %{c*100:.1f}" for i, (n, c) in enumerate(items, 1))
+            await ctx.reply(f"**Sonuc:**\n{lines}")
+    except Exception as e:
+        await ctx.reply(f"Hata: {e}")
+    finally:
+        if path and path.exists():
+            path.unlink(missing_ok=True)
+
+
+if __name__ == "__main__":
+    if not config.DISCORD_TOKEN or config.DISCORD_TOKEN == "free foken":
+        raise SystemExit("config.py'ye token yaz.")
+    bot.run(config.DISCORD_TOKEN)                                                                  
+
+
+DISCORD_TOKEN = ""
+YOLO_MODEL = "yolo11n.pt"
+CONF = 0.25
+PREFIX = "!" 
+
+
+
+
+
+
+
+
+
+
