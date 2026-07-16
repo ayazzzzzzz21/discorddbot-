@@ -1,0 +1,53 @@
+import random, speech_recognition as sr
+from deep_translator import GoogleTranslator
+import sys
+import pyaudiowpatch as pyaudio
+sys.modules["pyaudio"] = pyaudio
+
+
+kelimeler = {
+    "kolay": ["kedi", "köpek", "elma", "süt", "güneş"],
+    "orta": ["muz", "okul", "arkadaş", "pencere", "sarı"],
+    "zor": ["teknoloji", "üniversite", "bilgi", "telaffuz", "hayal gücü"]
+}
+
+print("=" * 40)
+print("  SPEAK & TRANSLATE GAME")
+print("=" * 40)
+print("Seviye: kolay / orta / zor")
+seviye = input("Seviye seç: ").strip().lower()
+while seviye not in kelimeler:
+    seviye = input("Geçersiz! kolay/orta/zor: ").strip().lower()
+
+skor, hata = 0, 0
+r = sr.Recognizer()
+cevir = GoogleTranslator(source="tr", target="en")
+
+print("\nKurallar: İngilizce söyle. 3 hata = oyun biter.\n")
+
+while hata < 3:
+    kelime = random.choice(kelimeler[seviye])
+    dogru = cevir.translate(kelime).lower()
+    print(f"Türkçe: {kelime}  →  İngilizce söyle!")
+
+    with sr.Microphone() as mic:
+        print("Dinliyorum...")
+        r.adjust_for_ambient_noise(mic, duration=0.5)
+        ses = r.listen(mic, timeout=5, phrase_time_limit=4)
+
+    try:
+        recognized = r.recognize_google(ses, language="en-US").lower()
+        print(f"Sen: {recognized} | Doğru: {dogru}")
+        if recognized == dogru:
+            skor += 1
+            print("Doğru! Skor:", skor)
+        else:
+            hata += 1
+            print(f"Yanlış! Hata: {hata}/3")
+    except Exception:
+        hata += 1
+        print(f"Anlaşılamadı. Hata: {hata}/3")
+
+print("\nOYUN BİTTİ!")
+print(f"Skor: {skor} | Hatalar: {hata}")
+print("Tekrar oyna: python oyun.py")
