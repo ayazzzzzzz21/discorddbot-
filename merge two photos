@@ -1,0 +1,35 @@
+!pip install "rembg[cpu]"
+
+
+from rembg import remove
+from PIL import Image
+from google.colab import files
+import io
+
+
+print(")
+uploaded_fg = files.upload()
+
+print("ARKA PLAN (yerleştireceğin görseli yükle)")
+uploaded_bg = files.upload()
+
+
+fg_name = list(uploaded_fg.keys())[0]
+bg_name = list(uploaded_bg.keys())[0]
+
+input_fg = Image.open(io.BytesIO(uploaded_fg[fg_name])).convert("RGBA")
+background = Image.open(io.BytesIO(uploaded_bg[bg_name])).convert("RGBA")
+
+
+fg_no_bg = remove(input_fg)
+
+
+fg_no_bg = fg_no_bg.resize((300, 300)) # İstersen değiştir
+
+
+background.paste(fg_no_bg, (200, 200), fg_no_bg) # (x, y) konum
+
+background.save("sonuc.png")
+
+
+files.download("sonuc.png")
